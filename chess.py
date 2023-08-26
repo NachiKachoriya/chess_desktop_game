@@ -39,7 +39,7 @@ class ChessGame(tk.Tk):
             self.board[1][col] = Pawn("white")
             self.board[6][col] = Pawn("black")
 
-        self.canvas = tk.Canvas(self, width=400, height=400)
+        self.canvas = tk.Canvas(self, width=800, height=800)
         self.canvas.pack()
 
         self.draw_board()
@@ -53,14 +53,14 @@ class ChessGame(tk.Tk):
             for col in range(8):
                 color_index = (row + col) % 2
                 color = colors[color_index]
-                x0, y0 = col * 50, row * 50
-                x1, y1 = x0 + 50, y0 + 50
+                x0, y0 = col * 100, row * 100
+                x1, y1 = x0 + 100, y0 + 100
                 self.canvas.create_rectangle(x0, y0, x1, y1, fill=color)
 
     def draw_pieces(self):
         self.piece_images = {}  # Store PhotoImage instances for each piece
         piece_images_dir = "./pieces-png"  # Replace with the actual path
-        square_size = 50  # Size of each square
+        square_size = 100  # Size of each square
         for row in range(8):
             for col in range(8):
                 piece = self.board[row][col]
@@ -72,29 +72,26 @@ class ChessGame(tk.Tk):
                     piece.canvas_item = piece_item
     
     def resize_image(self, image_path):
+        # width = 40
+        # height = 40
+        # resized_image = image.subsample(width, height)
+        # resized_image = image.subsample(width, height)
         image = PhotoImage(file=image_path)
-        width = 3
-        height = 3
-        resized_image = image.subsample(width, height)
-        return resized_image
-
+        return image
 
     def on_click(self, event):
-        col = event.x // 50
-        row = event.y // 50
+        col = event.x // 100
+        row = event.y // 100
         print(f"Clicked on row {row}, col {col}")
 
         if self.selected_piece:
             if (row, col) in self.highlighted_cells:
                 self.move_piece(row, col)
-                self.clear_selection()
                 self.draw_board()
                 self.draw_pieces()
-            else:
-                self.clear_highlight()
-                self.selected_piece = None
-        else:
             self.clear_highlight()
+            self.selected_piece = None
+        else:
             self.selected_piece = self.board[row][col]
             if self.selected_piece:
                 self.selected_piece_row, self.selected_piece_col = row, col
@@ -102,7 +99,6 @@ class ChessGame(tk.Tk):
                 print(f"Valid moves: {moves}")
                 self.highlighted_cells = moves
                 self.draw_highlight()
-
 
     def clear_highlight(self):
         for r, c in self.highlighted_cells:
@@ -142,15 +138,12 @@ class ChessGame(tk.Tk):
         # Move the selected piece
         self.board[dest_row][dest_col] = piece_to_move
         self.board[src_row][src_col] = None
-        self.clear_highlight()
-
-
 
     def draw_highlight(self):
         # self.clear_highlight()
         for r, c in self.highlighted_cells:
-            x0, y0 = c * 50, r * 50
-            x1, y1 = x0 + 50, y0 + 50
+            x0, y0 = c * 100, r * 100
+            x1, y1 = x0 + 100, y0 + 100
             self.canvas.create_rectangle(x0, y0, x1, y1, fill="", outline="blue", width=3, tags="highlight")
 
 
