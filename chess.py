@@ -11,6 +11,8 @@ class ChessGame(tk.Tk):
         self.selected_piece_row = None
         self.selected_piece_col = None
         self.highlighted_cells = []
+        self.en_passant_target_row = None
+        self.en_passant_target_col = None
 
         self.title("Chess")
 
@@ -66,16 +68,12 @@ class ChessGame(tk.Tk):
                 piece = self.board[row][col]
                 if piece:
                     image_path = f"{piece_images_dir}/{piece.color}/{piece.symbol.lower()}.png"
-                    self.piece_images[piece] = self.resize_image(image_path)
+                    self.piece_images[piece] = self.get_image(image_path)
                     x, y = col * square_size + square_size // 2, row * square_size + square_size // 2
                     piece_item = self.canvas.create_image(x, y, image=self.piece_images[piece], tags="piece")
                     piece.canvas_item = piece_item
     
-    def resize_image(self, image_path):
-        # width = 40
-        # height = 40
-        # resized_image = image.subsample(width, height)
-        # resized_image = image.subsample(width, height)
+    def get_image(self, image_path):
         image = PhotoImage(file=image_path)
         return image
 
@@ -133,6 +131,20 @@ class ChessGame(tk.Tk):
         
         if isinstance(piece_to_move, Rook):
             piece_to_move.has_moved = True
+        
+        # Handle en passant capture
+        if isinstance(piece_to_move, Pawn) and dest_row == self.en_passant_target_row and dest_col == self.en_passant_target_col:
+            # Remove the captured pawn
+            captured_pawn_row = src_row
+            captured_pawn_col = dest_col
+            self.board[captured_pawn_row][captured_pawn_col] = None
+        
+        # Update en passant target
+        self.en_passant_target_row = None
+        self.en_passant_target_col = None
+        if isinstance(piece_to_move, Pawn) and abs(dest_row - src_row) == 2:
+            self.en_passant_target_row = (src_row + dest_row) // 2  # Calculate the en passant target row
+            self.en_passant_target_col = dest_col
 
 
         # Move the selected piece

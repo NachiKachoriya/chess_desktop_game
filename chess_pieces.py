@@ -147,20 +147,19 @@ class Pawn(Piece):
         super().__init__(color)
         self.symbol = "P"
 
-    def valid_moves(self, board, row, col):
+    def valid_moves(self, board, row, col, en_passant_target=None):
         moves = []
 
-        # Define direction based on color
         direction = 1 if self.color == "white" else -1
-
-        # Moving one step forward
         new_row = row + direction
+
+       # Moving one step forward
         if self.is_valid_move(new_row, col) and board[new_row][col] is None:
             moves.append((new_row, col))
 
         # Moving two steps forward from starting position
         starting_row = 1 if self.color == "white" else 6
-        if row == starting_row and board[new_row][col] is None and board[new_row + direction][col] is None:
+        if row == starting_row and self.is_valid_move(new_row, col) and board[new_row][col] is None and board[new_row + direction][col] is None:
             moves.append((new_row + direction, col))
 
         # Capturing diagonally
@@ -168,5 +167,11 @@ class Pawn(Piece):
             new_col = col + d_col
             if self.is_valid_move(new_row, new_col) and board[new_row][new_col] and board[new_row][new_col].color != self.color:
                 moves.append((new_row, new_col))
+
+        # En passant capture
+        if en_passant_target is not None:
+            target_row, target_col = en_passant_target
+            if new_row == target_row and abs(col - target_col) == 1:
+                moves.append((target_row, target_col))
 
         return moves
