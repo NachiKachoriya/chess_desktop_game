@@ -2,7 +2,7 @@
 
 A simple chess game implemented in Python using the Tkinter library for the graphical user interface.
 
-![Chess Game Screenshot](screenshot.png)
+![Chess Game Screenshot]
 
 ## Table of Contents
 
